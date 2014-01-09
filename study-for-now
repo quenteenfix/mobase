@@ -14,8 +14,22 @@ var simpScroller = function(){
     var _scroller = function(dom, dir, config){
         var key = 'top';
         if(dir == 'x'){
-        
+            key = 'left';
+            Key = 'Left';
+            size = 'width';
+            Size = 'Width';
+            pageKey = 'pageX';
         }
+        var scroller = null;
+        if(config.hideScrollBar == false){
+            scroller = document.createElement('div');
+            scroller.className = 'scroller_' + dir;
+            config.container.appendChild(scroller);
+        }
+        if(scroller != null){
+            
+        }
+        
     };
     
     
@@ -32,15 +46,6 @@ var simpScroller = (function() {
         // 滚动
         var _scroller = function(container, direction, params) {
                 var key = "top", Key = "Top", size = "height", Size = "Height", pageKey = "pageY";
-                if (direction == "horizontal") {
-                        key = "left";
-                        Key = "Left"
-                        size = "width";
-                        Size = "Width"
-                        pageKey = "pageX";
-                }
-                
-                
                 // 插入滚动条
                 var scroller = null;
                 if (params.hideScrollBar == false) {
