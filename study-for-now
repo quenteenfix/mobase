@@ -2,8 +2,24 @@
 ** create by zhangxinxu(.com) 2013-07-15
 ** a simple method for custom scrolling
 ** it can be used on both mobile and parts desktop browser IE9+/FF/Chrome/...
-*/
-
+**/
+var simpScroller = function(){
+    var _touch_type = !((window.DocumentTouch && document instanceof window.DocumentTouch) || 'ontouchstart' in window) * 1;
+    var _event = {
+        start: ['touchstart', 'mousedown'][_touch_type],
+        move: ['touchmove', 'mousemove'][_touch_type],
+        end: ['touchend', 'mouseup'][_touch_type]
+    };
+    
+    var _scroller = function(dom, dir, config){
+        var key = 'top';
+        if(dir == 'x'){
+        
+        }
+    };
+    
+    
+}();
 var simpScroller = (function() {
         // 根据是否支持touch方法确定事件的类型
         var _upSupportTouch = !((window.DocumentTouch && document instanceof window.DocumentTouch) || 'ontouchstart' in window) * 1
