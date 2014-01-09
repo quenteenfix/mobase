@@ -12,9 +12,9 @@
     // init domain by itself right away
     M.host = function(window, document, undefined) {
         var protocol = 'http';
-        var host = '';
-        var root = '';
-        var base_url = '';
+        var host = 'www.baidu.com';
+        var root = '/quenteen';
+        var base_url = 'http://wwww.baidu.com/quenteen/';
 
         function setHost() {
             var loc = window.location;
@@ -136,11 +136,60 @@
             $('.popup-wrapper').remove();
             $('.popup-mask').remove();
         }
-
+        
         return {
             browser : browser,
             popup : popup,
             hidePopup : hidePopup
+        };
+    }();
+    
+    /**
+     *  auto complete the textarea on changing through ajax
+     */
+    M.auto = function(){
+        var xhr_cnt = 0;
+        var xhr_arr = [];
+        var fill_tpl = '<div class="fill-item#deep" data-uuap="#user_name">#cn_name,[#email],#dpt</div>';
+        
+        function fill(config){
+            var xhr_url = config['xhr_url'];
+            var dom = config['dom'];
+            var replace_kv = config['replace_kv'];
+            fill_tpl = config['tpl'] || fill_tpl;
+            
+            //abort last xhr in order to reduce invalid http request
+            if(xhr_cnt > 0){
+                xhr_arr[xhr_cnt - 1].abort();
+            }
+            
+            var render_results = [];
+            var xhr_vo = $.get(xhr_url, function(response){
+                var data = eval('(' + response + ')');
+                var vo = null, exe_tpl = null, is_deep = null, regex = null;
+                for(var ind in data){
+                    vo = data[ind];
+                    exe_tpl = fill_tpl;
+                    is_deep = parseInt(ind, 10) % 2 == 1 ? '' : ' deep';
+                    
+                    for(var key in replace_kv){
+                        regex = new RegExp(key, 'g');
+                        exe_tpl = exe_tpl.replace(regex, replace_kv[key]);
+                    }
+                    
+                    render_results.push(exe_tpl);
+                }
+                
+                //render target dom
+                $(dom).html(render_results.join(''));
+            });
+            
+            xhr_cnt++;
+            xhr_arr.push(xhr_vo);
+        }
+        
+        return {
+            fill : fill
         };
     }();
 
