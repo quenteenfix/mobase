@@ -1,0 +1,159 @@
+/**
+ * @title a simple lib for mobile application in namespace M *
+ * @notice namespace can be changed in your own ways *
+ * @author quenteenfix@gmail.com *
+ * @date 2014-01-09
+ */
+(function(exports) {
+    var MOCT, M, mb = MOCT = M = M || {
+        version : '1.0'
+    };
+
+    // init domain by itself right away
+    M.host = function(window, document, undefined) {
+        var protocol = 'http';
+        var host = '';
+        var root = '';
+        var base_url = '';
+
+        function setHost() {
+            var loc = window.location;
+            host = loc.host || document.domain;
+            protocol = loc.protocol;
+            var path_name = loc.pathname.substring(1);
+            root = '/' + (path_name === '' ? '' : path_name.substring(0, path_name.indexOf('/')));
+            base_url = protocol + '://' + host + root + '/';
+        }
+
+        function init() {
+            setHost();
+        }
+
+        init();// init all
+
+        return {
+            protocol : protocol,
+            host : host,
+            root : root,
+            base_url : base_url
+        };
+    }(window, document);
+
+    /**
+     * tools
+     */
+    M.util = function() {
+        function browser() {
+            var u = navigator.userAgent, app = navigator.appVersion;
+            return {// 移动终端浏览器版本信息
+                trident : u.indexOf('Trident') > -1, // IE内核
+                presto : u.indexOf('Presto') > -1, // opera内核
+                webkit : u.indexOf('AppleWebKit') > -1, // 苹果、谷歌内核
+                gecko : u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, // 火狐内核
+                mobile : !!u.match(/AppleWebKit.*Mobile.*/) || !!u.match(/AppleWebKit/), // 是否为移动终端
+                ios : !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), // ios终端
+                android : u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, // android终端或者uc浏览器
+                iphone : u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, // 是否为iPhone或者QQHD浏览器
+                ipad : u.indexOf('iPad') > -1, // 是否iPad
+                webapp : u.indexOf('Safari') == -1,// 是否web应该程序，没有头部与底部
+                google : u.indexOf('Chrome') > -1,
+                version : app
+            };
+        }
+
+        function popup() {
+            var base_config = {
+                notice : '',
+                button : '',
+                height : 360,
+                width : 260,
+                top : 50,
+                is_bg_close : false,// 是否点击浮层后关闭弹出框：true-关闭 false-不关闭
+                is_bg : true,// 是否有边框
+                to : ''
+            };
+            if (typeof (arguments[0]) == 'object') {
+                var config = arguments[0];
+                for ( var key in config) {
+                    base_config[key] = config[key];
+                }
+            }
+            var popup_arr = [];
+            popup_arr.push('<div class="popup-wrapper">');
+            popup_arr.push('<div class="popup">');
+            popup_arr.push('<div class="popup-bg">');
+            popup_arr.push('<div class="popup-title">');
+            popup_arr.push('<a class="close" href="javascript:;">×</a>');
+            popup_arr.push('</div>');
+            popup_arr.push('<div class="popup-content">');
+            popup_arr.push('<div class="popup-notice" id="popup_notice"></div>');
+            popup_arr.push('<div id="popup_button"></div>');
+            popup_arr.push('</div>');
+            popup_arr.push('</div>');
+            popup_arr.push('</div>');
+            popup_arr.push('</div>');
+            var popup_html = popup_arr.join('');
+            $('body').append(popup_html);
+            $('body').append('<div class="popup-mask"></div>');
+            $('#popup_notice').html(base_config['notice']);
+            $('#popup_button').html(base_config['button']);
+
+            var top = base_config['top'];
+            var height = base_config['height'];
+            var width = base_config['width'];
+            var margin_left = 0 - (width / 2);
+            $('.popup').css({
+                'height' : height + 10,
+                'width' : width + 10,
+                'margin-left' : margin_left,
+                'top' : top
+            });
+            $('.popup-bg').css({
+                'height' : height,
+                'width' : width
+            });
+
+            if (base_config['is_bg_close']) {
+                $('.popup-mask').live('click', function() {
+                    hidePopup();
+                });
+            }
+
+            if (base_config['is_bg']) {
+                $('.popup').addClass('is-bg');
+            }
+
+            $('.popup .close').live('click', function(event) {
+                hidePopup();
+            });
+            $('.popup-wrapper').show();
+            $('.popup-mask').animate({
+                opacity : 0.6
+            }, 0);
+        }
+
+        function hidePopup() {
+            $('.popup-wrapper').remove();
+            $('.popup-mask').remove();
+        }
+
+        return {
+            browser : browser,
+            popup : popup,
+            hidePopup : hidePopup
+        };
+    }();
+
+    M.browser = {};
+    M.base = {};
+    /**
+     * Initialization Entrace define a function and execute it, so the function
+     * will be exist and other object will be init.
+     */
+    M.base.start = function() {
+        M.browser = M.util.browser();
+    }();
+
+    // you can change the global invoked var here
+    exports.M = M;
+})(window);
