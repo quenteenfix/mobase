@@ -1,11 +1,11 @@
 /* css reset */
-body,dl,dd,h1,h2,h3,h4,h5,h6,p,form {
+
+body,dl,dd,h1,h2,h3,h4,h5,h6,p,form,object,blockquote,pre,legend,button,caption,abbr,address,acronym,cite,code,del,dfn,em,ins,kbd,q,samp,small,strike,sub,sup,tt,var,b,u,i,center,section,article,aside,header,footer,nav,menu,hgroup,dialog,details,summary,figure,figcaption,canvas,embed,output,ruby,time,mark,audio,video {
     margin: 0;
-    color: #333;
 }
 
-:link,:visited {
-    text-decoration: none;
+section,article,aside,header,footer,nav,menu,hgroup,dialog,details,figure,figcaption {
+    display: block;
 }
 
 ul,ol {
@@ -53,7 +53,7 @@ a:hover {
     *zoom: 1;
 }
 
-.clearfix:after {
+.clearfix::after {
     content: "clear";
     display: block;
     height: 0;
@@ -155,7 +155,7 @@ a:hover {
 }
 
 .fs {
-    font-family: "宋体";
+    font-family: "simsun";
 }
 
 .fss {
@@ -693,34 +693,12 @@ a:hover {
     background: #fff;
 }
 
-/* common-box */
-.common-box {
-
-}
-
-.common-head {
-    height: 33px;
-    line-height: 33px;
-    background: url(../../images/common/box_head.jpg) no-repeat;
-    padding: 0 0 0 16px;
-    color: #fff;
-    font-size: 14px;
-}
-
-.common-content {
-    border: 1px solid #B6D1EE;
-    background: #fff;
-    min-height: 50px;
-    _height: 50px;
-    margin: 0 0 10px;
-}
-
 /* basic layout css */
 .list-view {
-
+    font-size: 100%;
 }
 
-.list-view:after {
+.list-view::after {
     content: ".";
     display: block;
     height: 0;
@@ -758,7 +736,6 @@ a:hover {
     border: 3px solid #DBDBDB;
     z-index: 10086;
     font-size: 14px;
-    font-family: 微软雅黑;
     box-shadow: 0 0 18px 2px grey;
     text-align: left;
 }
@@ -842,10 +819,6 @@ a:hover {
     cursor: pointer;
 }
 
-.hide {
-    display: none;
-}
-
-.hidden {
+.hide,.hidden {
     display: none;
 }
