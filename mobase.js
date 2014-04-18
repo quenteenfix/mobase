@@ -69,7 +69,7 @@
                 width : 260,
                 top : 50,
                 is_bg_close : false,// 是否点击浮层后关闭弹出框：true-关闭 false-不关闭
-                is_bg : true,// 是否有边框
+                is_border : true,// 是否有边框
                 to : ''
             };
             if (typeof (arguments[0]) == 'object') {
@@ -108,22 +108,21 @@
                 'margin-left' : margin_left,
                 'top' : top
             });
-            $('.popup-bg').css({
-                'height' : height,
-                'width' : width
-            });
+            /*
+             * $('.popup-bg').css({ 'height' : height, 'width' : width });
+             */
 
             if (base_config['is_bg_close']) {
-                $('.popup-mask').live('click', function() {
+                $('.popup-mask').on('click', function() {
                     hidePopup();
                 });
             }
 
-            if (base_config['is_bg']) {
-                $('.popup').addClass('is-bg');
+            if (base_config['is_border']) {
+                $('.popup').css('border', '3px solid #dbdbdb');
             }
 
-            $('.popup .close').live('click', function(event) {
+            $('.popup .close').on('click', function(event) {
                 hidePopup();
             });
             $('.popup-wrapper').show();
@@ -136,58 +135,92 @@
             $('.popup-wrapper').remove();
             $('.popup-mask').remove();
         }
-        
+
+        //异步执行队列，可用于异步执行，并实时输出结果：M.util.ayncQueue.add(function(){}).add(500).run();
+        var ayncQueue = function() {
+            var queue = [];
+
+            function add(target){
+                if(!/function|number/.test(typeof target)){
+                    return;
+                }
+                queue.push(target);
+                return this;
+            }
+
+            function run(){
+                var source = queue.shift();
+                if(!source){
+                    return;
+                }
+                if(typeof source == 'function'){
+                    source();
+                    run();
+                }else{
+                    setTimeout(function(){
+                        run();
+                    }, source);
+                }
+            }
+
+            return {
+                add: add,
+                run: run
+            };
+        }();
+
         return {
             browser : browser,
             popup : popup,
-            hidePopup : hidePopup
+            hidePopup : hidePopup,
+            ayncQueue: ayncQueue
         };
     }();
-    
+
     /**
-     *  auto complete the textarea on changing through ajax
+     * auto complete the textarea on changing through ajax
      */
-    M.auto = function(){
+    M.auto = function() {
         var xhr_cnt = 0;
         var xhr_arr = [];
         var fill_tpl = '<div class="fill-item#deep" data-uuap="#user_name">#cn_name,[#email],#dpt</div>';
-        
-        function fill(config){
+
+        function fill(config) {
             var xhr_url = config['xhr_url'];
             var dom = config['dom'];
             var replace_kv = config['replace_kv'];
             fill_tpl = config['tpl'] || fill_tpl;
-            
-            //abort last xhr in order to reduce invalid http request
-            if(xhr_cnt > 0){
+
+            // abort last xhr in order to reduce invalid http request
+            if (xhr_cnt > 0) {
                 xhr_arr[xhr_cnt - 1].abort();
             }
-            
+
             var render_results = [];
-            var xhr_vo = $.get(xhr_url, function(response){
+            var xhr_vo = $.get(xhr_url, function(response) {
                 var data = eval('(' + response + ')');
                 var vo = null, exe_tpl = null, is_deep = null, regex = null;
-                for(var ind in data){
+                for ( var ind in data) {
                     vo = data[ind];
                     exe_tpl = fill_tpl;
                     is_deep = parseInt(ind, 10) % 2 == 1 ? '' : ' deep';
-                    
-                    for(var key in replace_kv){
+
+                    for ( var key in replace_kv) {
                         regex = new RegExp(key, 'g');
                         exe_tpl = exe_tpl.replace(regex, replace_kv[key]);
                     }
-                    
+
                     render_results.push(exe_tpl);
                 }
-                
-                //render target dom
+
+                // render target dom
                 $(dom).html(render_results.join(''));
             });
-            
+
             xhr_cnt++;
             xhr_arr.push(xhr_vo);
         }
-        
+
         return {
             fill : fill
         };
